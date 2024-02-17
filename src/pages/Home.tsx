@@ -13,14 +13,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge';
 
 import { MultiSelect, OptionWithHeading } from '@/components/MultiSelect';
 import Loader from '@/components/Loader';
 
 import { Problems } from '@/@types/problems';
 import useProblems from '@/hooks/useProblems';
+import Badges from '@/components/Badges';
 
 export default function Home() {
   const [filter, setFilter] = useState<{ label: string, value: string }[]>([
@@ -47,15 +46,8 @@ export default function Home() {
   console.log('problems', problems);
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='grow flex flex-col gap-4'>
       <header className='space-y-4'>
-        <div className='text-right'>
-          <Button asChild variant="ghost" className=''>
-            <Link to="/new-problem">
-              New
-            </Link>
-          </Button>
-        </div>
         {isLoadingOption ?
           <Loader /> :
           options && <MultiSelect
@@ -67,16 +59,20 @@ export default function Home() {
           />
         }
       </header>
-      <section>
+      {/* flex items-center justify-center */}
+      <section
+        className={`grow ${isLoadingProblem ? "flex items-center justify-center" : ""}`}
+      >
         {isLoadingProblem ?
-          <Loader /> :
-          problems?.map(group => {
-            return <Accordion
-              key={group.heading}
-              type="single"
-              collapsible
-            >
-              <AccordionItem value="item-1">
+          <Loader size={30} /> :
+          <Accordion
+            type="multiple"
+          >
+            {problems?.map(group => {
+              return <AccordionItem
+                value={group.heading}
+                key={group.heading}
+              >
                 <AccordionTrigger className='hover:no-underline'>{group.heading}</AccordionTrigger>
                 <AccordionContent className='flex flex-col gap-4'>
                   {group.options.map(option => {
@@ -88,11 +84,12 @@ export default function Home() {
                         <CardHeader>
                           <CardTitle>{option.name}</CardTitle>
                           <div className='flex gap-2 pt-1'>
-                            {[...option.source, option.difficulty, option.category].map(problem => {
+                            <Badges badges={[...option.source, option.category, option.difficulty]} />
+                            {/* {[...option.source, option.difficulty, option.category].map(problem => {
                               return <Badge variant="secondary"
                                 key={problem.id}
                               >{problem.name}</Badge>
-                            })}
+                            })} */}
                           </div>
                         </CardHeader>
                       </Card>
@@ -100,12 +97,10 @@ export default function Home() {
                   })}
                 </AccordionContent>
               </AccordionItem>
-            </Accordion>
-          })
+            })}
+          </Accordion>
         }
-
       </section>
     </div>
-
   )
 }

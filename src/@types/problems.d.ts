@@ -33,3 +33,10 @@ export type Source = {
   slug: "leetcode-75" | "leetcode-150" | "neetcode-75" | "neetcode-150"
   createdAt: number
 }
+
+export type Problem = Option & {
+  description: string
+  contentSelf: string
+  contentTime: string
+  contentSpace: string
+}

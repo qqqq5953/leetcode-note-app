@@ -9,6 +9,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
+import { Link } from "react-router-dom";
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -50,9 +51,11 @@ const components: { title: string; href: string; description: string }[] = [
 
 export default function Header() {
   return (
-    <NavigationMenu className="shadow">
+    <NavigationMenu className="shadow grow-0">
       <NavigationMenuList className="justify-between w-screen px-4 py-2">
-        <div>Logo</div>
+        <div>
+          <Link to="/">Logo</Link>
+        </div>
         <div className="flex">
           <NavigationMenuItem>
             <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>

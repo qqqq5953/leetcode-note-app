@@ -9,6 +9,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import Problem from './pages/Problem.tsx';
 
 const router = createBrowserRouter([
   {
@@ -25,7 +26,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/problem/:slug",
-        element: <>problem</>,
+        element: <Problem />,
       },
       {
         path: "*",

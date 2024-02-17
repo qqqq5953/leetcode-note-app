@@ -11,6 +11,12 @@ export default function useProblems() {
         queryFn: problemsApi.getProblems
       })
     },
+    getProblem: (slug: string) => {
+      return useQuery({
+        queryKey: ['problem'],
+        queryFn: () => problemsApi.getProblem(slug)
+      })
+    },
     getFilterOptions: () => {
       return useQuery({
         queryKey: ['options'],
