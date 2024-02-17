@@ -1,6 +1,8 @@
+import { BaseProps } from '@/@types/common'
 import { Badge } from './ui/badge'
+import { cn } from "@/lib/utils"
 
-type Props = {
+type Props = BaseProps & {
   badges: {
     id: string
     name: string
@@ -19,7 +21,11 @@ export default function Badges(props: Props) {
   return (
     <>
       {props.badges.map(badge => {
-        return <Badge className={`${colorMap[badge.name] || "border-neutral-600 bg-transparent text-neutral-600"}`}
+        return <Badge
+          className={cn(
+            `${colorMap[badge.name] || "border-neutral-600 bg-transparent text-neutral-600"}`,
+            props.className
+          )}
           key={badge.id}
         >{badge.name}</Badge>
       })}
