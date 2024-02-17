@@ -4,6 +4,11 @@ import App from './App.tsx'
 import './index.css'
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Home from './pages/Home.tsx';
+import { handlers } from './mocks/handlers.ts';
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 
 const router = createBrowserRouter([
   {
@@ -19,6 +24,10 @@ const router = createBrowserRouter([
         element: <>new-problem</>,
       },
       {
+        path: "/problem/:slug",
+        element: <>problem</>,
+      },
+      {
         path: "*",
         element: <>Not found</>,
       },
@@ -26,8 +35,22 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
-);
+const queryClient = new QueryClient()
+
+async function enableMocking() {
+  if (!import.meta.env.DEV) return
+  if (handlers.length === 0) return
+
+  const { worker } = await import('./mocks/browsers.ts')
+  return worker.start()
+}
+
+enableMocking().then(() => {
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </React.StrictMode>
+  );
+})

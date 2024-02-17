@@ -1,53 +1,50 @@
 import { useState } from 'react'
+import { Link } from "react-router-dom";
+import { UseQueryResult } from '@tanstack/react-query'
+
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Button } from '@/components/ui/button'
-import { Link } from "react-router-dom";
-import { MultiSelect } from '@/components/MultiSelect';
+import { Badge } from '@/components/ui/badge';
+
+import { MultiSelect, OptionWithHeading } from '@/components/MultiSelect';
+import Loader from '@/components/Loader';
+
+import { Problems } from '@/@types/problems';
+import useProblems from '@/hooks/useProblems';
 
 export default function Home() {
-  const [group, setGroup] = useState<{ label: string, value: string }[]>([
+  const [filter, setFilter] = useState<{ label: string, value: string }[]>([
     { label: "All Categories", value: "allCategories" },
     { label: "All Difficulties", value: "allDifficulties" },
     { label: "All Problems", value: "allProblems" },
   ])
 
-  const options = [
-    {
-      heading: "Category",
-      options: [
-        { label: "All Categories", value: "allCategories" },
-        { label: "Array and Hash", value: "1" },
-        { label: "Tree", value: "2" },
-        { label: "Graph", value: "3" },
-      ]
-    },
-    {
-      heading: "Difficulty",
-      options: [
-        { label: "All Difficulties", value: "allDifficulties" },
-        { label: "Easy", value: "4" },
-        { label: "Medium", value: "5" },
-        { label: "Hard", value: "6" },
-      ]
-    },
-    {
-      heading: "Problem",
-      options: [
-        { label: "All Problems", value: "allProblems" },
-        { label: "leetcode 75", value: "7" },
-        { label: "leetcode 150", value: "8" },
-        { label: "neetcode 75", value: "9" },
-        { label: "neetcode 150", value: "10" },
-      ]
-    },
-  ]
+  const { getProblems, getFilterOptions } = useProblems()
+
+  const {
+    data: options,
+    isLoading: isLoadingOption
+  }: UseQueryResult<OptionWithHeading[], Error> = getFilterOptions()
+
+  console.log('options', options);
+
+
+  const {
+    data: problems,
+    isLoading: isLoadingProblem
+  }: UseQueryResult<Problems[], Error> = getProblems()
+
+  console.log('problems', problems);
 
   return (
     <div className='flex flex-col gap-4'>
@@ -59,30 +56,54 @@ export default function Home() {
             </Link>
           </Button>
         </div>
-        <MultiSelect
-          selected={group}
-          optionGroups={options}
-          placeholder="標籤"
-          onChange={setGroup}
-          className="sm:w-[510px]"
-        />
+        {isLoadingOption ?
+          <Loader /> :
+          options && <MultiSelect
+            selected={filter}
+            optionGroups={options}
+            placeholder="Problems to practice ..."
+            onChange={setFilter}
+            className="sm:w-[510px]"
+          />
+        }
       </header>
       <section>
-        <div>
-          <h3></h3>
-          <Card>
-            <CardHeader>
-              <CardTitle>Card Title</CardTitle>
-              <CardDescription>Card Description</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Card Content</p>
-            </CardContent>
-            <CardFooter>
-              <p>Card Footer</p>
-            </CardFooter>
-          </Card>
-        </div>
+        {isLoadingProblem ?
+          <Loader /> :
+          problems?.map(group => {
+            return <Accordion
+              key={group.heading}
+              type="single"
+              collapsible
+            >
+              <AccordionItem value="item-1">
+                <AccordionTrigger className='hover:no-underline'>{group.heading}</AccordionTrigger>
+                <AccordionContent className='flex flex-col gap-4'>
+                  {group.options.map(option => {
+                    return <Link
+                      key={option.id}
+                      to={`/problem/${option.slug}`}
+                    >
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>{option.name}</CardTitle>
+                          <div className='flex gap-2 pt-1'>
+                            {[...option.source, option.difficulty, option.category].map(problem => {
+                              return <Badge variant="secondary"
+                                key={problem.id}
+                              >{problem.name}</Badge>
+                            })}
+                          </div>
+                        </CardHeader>
+                      </Card>
+                    </Link>
+                  })}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          })
+        }
+
       </section>
     </div>
 

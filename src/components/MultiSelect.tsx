@@ -115,7 +115,7 @@ const MultiSelect: React.FC<MultiSelectProps> = forwardRef(({ optionGroups, sele
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-[327px] p-0 bg-red-300">
         <Command className={className}>
           <CommandInput placeholder="Search ..." />
           <CommandEmpty>No item found.</CommandEmpty>
